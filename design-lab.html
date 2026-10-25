@@ -1,0 +1,2976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laghey Construction — design lab (prototype)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="icon" href="img/Laghey5b.png" type="image/png">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;600;700&family=DM+Serif+Display&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet">
+  <style>
+    /* =====================  SHARED  ===================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline: 3px solid #e04a2f;
+      outline-offset: 3px;
+    }
+
+    .wrap {
+      width: min(1240px, calc(100% - 48px));
+      margin-inline: auto;
+    }
+
+    .section {
+      scroll-margin-top: 90px;
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      letter-spacing: .28em;
+      text-transform: uppercase;
+      margin: 0 0 18px;
+    }
+
+    .preview-notice {
+      padding: 8px 12px;
+      background: #e4d49a;
+      color: #25382f;
+      text-align: center;
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    /* variant switcher */
+    .switcher {
+      position: fixed;
+      z-index: 9999;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+      padding: 5px;
+      border-radius: 999px;
+      background: rgba(16, 18, 20, .92);
+      border: 1px solid rgba(255, 255, 255, .18);
+      backdrop-filter: blur(8px);
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+    }
+
+    .switcher button {
+      appearance: none;
+      border: 0;
+      background: none;
+      color: #cfcac3;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      letter-spacing: .06em;
+    }
+
+    .switcher .switch-code {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .switcher button[aria-pressed="true"] .switch-code {
+      color: inherit;
+    }
+
+    .switcher button[aria-pressed="true"] {
+      background: #e04a2f;
+      color: #fff;
+    }
+
+    /* =====================  VARIANT 1 — INDUSTRIAL  ===================== */
+    body.v1 {
+      background: #121415;
+      color: #efedea;
+    }
+
+    .v1 .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(18, 20, 21, .94);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid #2a2e30;
+    }
+
+    /* Light backing keeps the original dark-grey and crimson logo readable on charcoal. */
+    .v1:not(.v4) .logo {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      background: #f5f2ec;
+    }
+
+    .v1:not(.v4) .nav ul a {
+      color: #b9b4ad;
+    }
+
+    .v1:not(.v4) .nav ul a:hover {
+      color: #fff;
+    }
+
+    .v1 .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 14px 0;
+    }
+
+    .v1 .logo img {
+      height: 72px;
+      width: auto;
+      filter: none;
+      opacity: 1;
+    }
+
+    .v1 .nav ul {
+      display: flex;
+      gap: 26px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-family: "Barlow Condensed", sans-serif;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-size: 15px;
+    }
+
+    .v1 .nav ul a {
+      text-decoration: none;
+      color: #565c60;
+    }
+
+    .v1 .nav ul a:hover {
+      color: #121415;
+    }
+
+    .v1 .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 22px;
+      background: #e04a2f;
+      color: #fff;
+      text-decoration: none;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 15px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      border: 1px solid #e04a2f;
+      transition: background .2s, color .2s;
+    }
+
+    .v1 .btn:hover {
+      background: transparent;
+      color: #ff7a5e;
+    }
+
+    .v1 .btn--ghost {
+      background: transparent;
+      border-color: #4a5155;
+      color: #e7e4e0;
+    }
+
+    .v1 .btn--ghost:hover {
+      border-color: #e04a2f;
+      background: rgba(224, 74, 47, .1);
+      color: #fff;
+    }
+
+    .v1 .hero {
+      position: relative;
+      min-height: 82vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 120px 0 54px;
+      overflow: hidden;
+      background-image: linear-gradient(180deg, rgba(18, 20, 21, .55) 0%, rgba(18, 20, 21, .9) 70%, #121415 100%), url("img/hero-bg.jpg");
+      background-size: cover;
+      background-position: center 30%;
+    }
+
+    .v1 .hero h1 {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(44px, 8.4vw, 116px);
+      line-height: .9;
+      letter-spacing: -.02em;
+      text-transform: uppercase;
+      margin: 0 0 22px;
+    }
+
+    .v1 .hero h1 em {
+      font-style: normal;
+      color: #e04a2f;
+    }
+
+    .v1 .hero p.lede {
+      max-width: 46ch;
+      font-size: 17px;
+      line-height: 1.65;
+      color: #cbc6bf;
+      margin: 0 0 28px;
+    }
+
+    .v1 .hero .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .v1 .hero-meta {
+      display: flex;
+      gap: 34px;
+      margin-top: 44px;
+      padding-top: 22px;
+      border-top: 1px solid #33383a;
+      font-family: "Space Mono", monospace;
+      font-size: 12px;
+      color: #8f8a84;
+      flex-wrap: wrap;
+    }
+
+    .v1 .hero-meta strong {
+      display: block;
+      color: #efedea;
+      font-size: 20px;
+      margin-bottom: 4px;
+      font-family: "Barlow Condensed", sans-serif;
+      letter-spacing: .04em;
+    }
+
+    .v1 .marquee {
+      background: #e04a2f;
+      color: #14100f;
+      overflow: hidden;
+      border-block: 1px solid #b8351c;
+    }
+
+    .v1 .marquee div {
+      display: flex;
+      gap: 40px;
+      padding: 11px 0;
+      white-space: nowrap;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 16px;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      animation: v1slide 26s linear infinite;
+    }
+
+    @keyframes v1slide {
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    .v1 section {
+      padding: 76px 0;
+    }
+
+    .v1 h2 {
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(30px, 4.4vw, 54px);
+      line-height: 1;
+      text-transform: uppercase;
+      letter-spacing: -.01em;
+      margin: 0;
+    }
+
+    .v1 .head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 30px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .v1 .service-list {
+      border-top: 1px solid #2d3234;
+    }
+
+    .v1 .service-row {
+      display: grid;
+      grid-template-columns: 62px 1fr 1.15fr 28px;
+      gap: 26px;
+      align-items: baseline;
+      padding: 26px 4px;
+      border-bottom: 1px solid #2d3234;
+      transition: background .25s, padding-left .25s;
+    }
+
+    .v1 .service-row:hover {
+      background: #191d1e;
+      padding-left: 16px;
+    }
+
+    .v1 .service-row .num {
+      font-family: "Space Mono", monospace;
+      font-size: 12px;
+      color: #e04a2f;
+    }
+
+    .v1 .service-row h3 {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(22px, 2.4vw, 30px);
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .v1 .service-row p {
+      margin: 0;
+      color: #9d9892;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    .v1 .service-row .arrow {
+      color: #5c6366;
+      font-size: 20px;
+    }
+
+    .v1 .gallery {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      grid-template-rows: 240px 240px;
+      gap: 14px;
+    }
+
+    .v1 .gallery figure {
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+      background: #1b1f21;
+    }
+
+    .v1 .gallery figure:first-child {
+      grid-row: span 2;
+    }
+
+    .v1 .gallery img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.75) contrast(1.05);
+      transition: transform .6s ease, filter .6s ease;
+    }
+
+    .v1 .gallery figure:hover img {
+      transform: scale(1.06);
+      filter: none;
+    }
+
+    .v1 .gallery figcaption {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 28px 18px 14px;
+      background: linear-gradient(transparent, rgba(10, 12, 13, .92));
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #ddd8d2;
+    }
+
+    .v1 .about {
+      background: #171a1b;
+      border-block: 1px solid #282d2f;
+    }
+
+    .v1 .about-grid {
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .v1 .about blockquote {
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.15;
+      margin: 0 0 22px;
+      letter-spacing: .01em;
+    }
+
+    .v1 .about p {
+      color: #a9a4a0;
+      line-height: 1.75;
+      font-size: 15.5px;
+    }
+
+    .v1 .about ul {
+      list-style: none;
+      padding: 0;
+      margin: 26px 0 0;
+      display: grid;
+      gap: 12px;
+      color: #cdc8c2;
+      font-size: 15px;
+    }
+
+    .v1 .about ul li {
+      display: flex;
+      gap: 12px;
+    }
+
+    .v1 .about ul li::before {
+      content: "—";
+      color: #e04a2f;
+    }
+
+    .v1 .about figure {
+      margin: 0;
+      border: 1px solid #33383a;
+    }
+
+    .v1 .about figure img {
+      width: 100%;
+      height: 480px;
+      object-fit: cover;
+      filter: grayscale(.25) contrast(1.05);
+    }
+
+    .v1 .contact {
+      background: #e04a2f;
+      color: #14100f;
+      padding: 70px 0;
+    }
+
+    .v1 .contact-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .v1 .contact h2 {
+      color: #14100f;
+    }
+
+    .v1 .contact .phone {
+      display: inline-block;
+      font-family: "Archivo Black", sans-serif;
+      font-size: clamp(28px, 4vw, 46px);
+      text-decoration: none;
+      border-bottom: 4px solid rgba(20, 16, 15, .35);
+    }
+
+    .v1 .contact dl {
+      margin: 0;
+      display: grid;
+      gap: 16px;
+      font-size: 15px;
+    }
+
+    .v1 .contact dt {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      opacity: .7;
+      margin-bottom: 3px;
+    }
+
+    .v1 .contact dd {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .v1 footer {
+      background: #0d0f10;
+      color: #7d807f;
+      padding: 26px 0;
+      font-family: "Space Mono", monospace;
+      font-size: 11.5px;
+      letter-spacing: .06em;
+    }
+
+    .v1 .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* =====================  VARIANT 4 — INDUSTRIAL + LIGHT HEADER  ===================== */
+    /* Reuses every v1 rule; only the header and logo change. */
+    body.v4 .site-header {
+      background: #f5f2ec;
+      border-bottom: 1px solid #ddd6c9;
+      backdrop-filter: none;
+    }
+
+    .v4 .nav {
+      padding: 8px 0;
+    }
+
+    .v4 .logo img {
+      height: 72px;
+      width: auto;
+      filter: none;
+      opacity: 1;
+      max-width: none;
+    }
+
+    .v4 .nav ul a {
+      color: #565c60;
+    }
+
+    .v4 .nav ul a:hover {
+      color: #121415;
+    }
+
+    /* =====================  VARIANT 2 — BLUEPRINT  ===================== */
+    body.v2 {
+      background: #f2efe9;
+      color: #16202a;
+    }
+
+    .v2 .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(242, 239, 233, .92);
+      border-bottom: 1px solid #d6d0c6;
+      backdrop-filter: blur(8px);
+    }
+
+    .v2 .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 12px 0;
+    }
+
+    .v2 .logo img {
+      height: 72px;
+      width: auto;
+    }
+
+    .v2 .nav ul {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-family: "Space Mono", monospace;
+      font-size: 11.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .v2 .nav ul a {
+      text-decoration: none;
+      color: #4c5761;
+      padding-bottom: 3px;
+      border-bottom: 1px solid transparent;
+    }
+
+    .v2 .nav ul a:hover {
+      border-color: #a91515;
+      color: #16202a;
+    }
+
+    .v2 .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 20px;
+      background: #16202a;
+      color: #f2efe9;
+      text-decoration: none;
+      font-family: "Space Mono", monospace;
+      font-size: 11.5px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      border: 1px solid #16202a;
+      transition: background .2s;
+    }
+
+    .v2 .btn:hover {
+      background: #a91515;
+      border-color: #a91515;
+    }
+
+    .v2 .btn--ghost {
+      background: transparent;
+      color: #16202a;
+      border-color: #b9b2a7;
+    }
+
+    .v2 .btn--ghost:hover {
+      background: #16202a;
+      color: #f2efe9;
+      border-color: #16202a;
+    }
+
+    .v2 .hero {
+      position: relative;
+      padding: 70px 0 0;
+      background-image:
+        linear-gradient(rgba(22, 32, 42, .06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(22, 32, 42, .06) 1px, transparent 1px);
+      background-size: 48px 46px;
+      border-bottom: 1px solid #d6d0c6;
+    }
+
+    .v2 .hero-grid {
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 54px;
+      align-items: end;
+    }
+
+    .v2 .hero h1 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(38px, 5.6vw, 74px);
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      margin: 0 0 20px;
+    }
+
+    .v2 .hero h1 span {
+      color: #a91515;
+    }
+
+    .v2 .hero p.lede {
+      font-size: 16.5px;
+      line-height: 1.7;
+      color: #4d5862;
+      max-width: 52ch;
+      margin: 0 0 26px;
+    }
+
+    .v2 .hero .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .v2 .sheet {
+      background: #fbf9f5;
+      border: 1px solid #cfc7bb;
+      padding: 0;
+      box-shadow: 12px 12px 0 rgba(22, 32, 42, .06);
+    }
+
+    .v2 .sheet h2 {
+      font-family: "Space Mono", monospace;
+      font-size: 11px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      margin: 0;
+      padding: 12px 16px;
+      border-bottom: 1px solid #cfc7bb;
+      color: #5b6470;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .v2 .sheet .rows {
+      padding: 6px 16px 16px;
+    }
+
+    .v2 .sheet .row {
+      display: grid;
+      grid-template-columns: 88px 1fr;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px dotted #ddd6ca;
+      font-size: 14px;
+    }
+
+    .v2 .sheet .row:last-child {
+      border-bottom: 0;
+    }
+
+    .v2 .sheet .row dt {
+      font-family: "Space Mono", monospace;
+      font-size: 10.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #8a8378;
+      padding-top: 2px;
+    }
+
+    .v2 .sheet .row dd {
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .v2 .hero-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid #d6d0c6;
+      margin-top: 46px;
+      background: #fbf9f5;
+    }
+
+    .v2 .hero-strip div {
+      padding: 18px 20px;
+      border-right: 1px solid #e2dbd0;
+      font-family: "Space Mono", monospace;
+      font-size: 10.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #7c7568;
+    }
+
+    .v2 .hero-strip div:last-child {
+      border-right: 0;
+    }
+
+    .v2 .hero-strip strong {
+      display: block;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 20px;
+      letter-spacing: 0;
+      text-transform: none;
+      color: #16202a;
+      margin-bottom: 2px;
+    }
+
+    .v2 section {
+      padding: 64px 0;
+    }
+
+    .v2 h2 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(28px, 3.6vw, 44px);
+      line-height: 1.05;
+      margin: 0;
+    }
+
+    .v2 .head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .v2 .head p {
+      max-width: 46ch;
+      color: #4d5862;
+      font-size: 15.5px;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .v2 .services {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border: 1px solid #cfc7bb;
+      background: #fbf9f5;
+    }
+
+    .v2 .services article {
+      padding: 22px 20px 24px;
+      border-right: 1px solid #e2dbd0;
+      border-bottom: 1px solid #e2dbd0;
+      transition: background .2s;
+    }
+
+    .v2 .services article:hover {
+      background: #16202a;
+      color: #f4f1ea;
+    }
+
+    .v2 .services article:hover p {
+      color: #b9c2c9;
+    }
+
+    .v2 .services .ref {
+      font-family: "Space Mono", monospace;
+      font-size: 10.5px;
+      letter-spacing: .12em;
+      color: #a91515;
+      display: block;
+      margin-bottom: 14px;
+    }
+
+    .v2 .services h3 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: 21px;
+      margin: 0 0 8px;
+    }
+
+    .v2 .services p {
+      margin: 0;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: #5b6470;
+    }
+
+    .v2 .projects {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .v2 .projects figure {
+      margin: 0;
+      background: #fbf9f5;
+      border: 1px solid #cfc7bb;
+    }
+
+    .v2 .projects img {
+      width: 100%;
+      height: 230px;
+      object-fit: cover;
+      filter: saturate(.8);
+    }
+
+    .v2 .projects figcaption {
+      padding: 14px 16px;
+      font-family: "Space Mono", monospace;
+      font-size: 10.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: #6b6459;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .v2 .about {
+      background: #fbf9f5;
+      border-block: 1px solid #d6d0c6;
+    }
+
+    .v2 .about-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 54px;
+      align-items: center;
+    }
+
+    .v2 .about img {
+      width: 100%;
+      height: 430px;
+      object-fit: cover;
+      border: 1px solid #cfc7bb;
+    }
+
+    .v2 .about p {
+      color: #4d5862;
+      line-height: 1.75;
+      font-size: 15.5px;
+    }
+
+    .v2 .about ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0 0;
+      display: grid;
+      gap: 10px;
+      font-size: 14.5px;
+      color: #33404b;
+    }
+
+    .v2 .about ul li {
+      padding-left: 20px;
+      position: relative;
+    }
+
+    .v2 .about ul li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 9px;
+      width: 8px;
+      height: 1px;
+      background: #a91515;
+    }
+
+    .v2 .contact {
+      background: #16202a;
+      color: #e9e4db;
+      padding: 56px 0;
+    }
+
+    .v2 .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 44px;
+      align-items: center;
+    }
+
+    .v2 .contact h2 {
+      color: #f6f3ec;
+    }
+
+    .v2 .contact a.phone {
+      display: inline-block;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(26px, 3.4vw, 40px);
+      text-decoration: none;
+      color: #fff;
+      margin-top: 12px;
+      border-bottom: 2px solid #a91515;
+    }
+
+    .v2 .contact dl {
+      margin: 0;
+      display: grid;
+      gap: 14px;
+      font-size: 14.5px;
+      font-family: "Space Mono", monospace;
+    }
+
+    .v2 .contact dt {
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: #8b96a1;
+      margin-bottom: 3px;
+    }
+
+    .v2 .contact dd {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+    }
+
+    .v2 footer {
+      background: #f2efe9;
+      color: #7c7568;
+      padding: 22px 0;
+      font-family: "Space Mono", monospace;
+      font-size: 10.5px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      border-top: 1px solid #d6d0c6;
+    }
+
+    .v2 .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    /* =====================  VARIANT 3 — EDITORIAL  ===================== */
+    body.v3 {
+      background: #efece6;
+      color: #1c1c1a;
+    }
+
+    .v3 .site-header {
+      position: relative;
+      z-index: 40;
+      padding: 20px 0;
+      color: #1c1c1a;
+      background: #efece6;
+      border-bottom: 1px solid #ddd7cb;
+    }
+
+    .v3 .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .v3 .logo img {
+      height: 72px;
+      width: auto;
+      filter: none;
+    }
+
+    .v3 .nav ul {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-size: 12px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .v3 .nav ul a {
+      text-decoration: none;
+    }
+
+    .v3 .nav .call {
+      text-decoration: none;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 17px;
+      border-bottom: 1px solid currentColor;
+    }
+
+    .v3 .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 78vh;
+      background: #efece6;
+    }
+
+    .v3 .hero-copy {
+      padding: 68px 60px 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .v3 .hero h1 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(36px, 4.6vw, 62px);
+      line-height: 1.02;
+      letter-spacing: -.02em;
+      margin: 0 0 22px;
+      max-width: 15ch;
+    }
+
+    .v3 .hero h1 em {
+      font-style: italic;
+      color: #a91515;
+    }
+
+    .v3 .hero p.lede {
+      font-size: 16px;
+      line-height: 1.75;
+      color: #4d4a44;
+      max-width: 42ch;
+      margin: 0;
+    }
+
+    .v3 .hero .actions {
+      display: flex;
+      gap: 14px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .v3 .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 24px;
+      background: #1c1c1a;
+      color: #f4f1ea;
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      border: 1px solid #1c1c1a;
+      transition: background .2s, color .2s;
+    }
+
+    .v3 .btn:hover {
+      background: #a91515;
+      border-color: #a91515;
+    }
+
+    .v3 .btn--ghost {
+      background: transparent;
+      color: #1c1c1a;
+      border-color: #c3bdb2;
+    }
+
+    .v3 .btn--ghost:hover {
+      background: #1c1c1a;
+      color: #f4f1ea;
+      border-color: #1c1c1a;
+    }
+
+    .v3 .hero-art {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .v3 .hero-art img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(.85) contrast(1.05);
+    }
+
+    .v3 .hero-art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(200deg, rgba(28, 28, 26, 0) 40%, rgba(28, 28, 26, .45));
+    }
+
+    .v3 .hero-art figcaption {
+      position: absolute;
+      left: 26px;
+      bottom: 22px;
+      z-index: 2;
+      color: #f1eee7;
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .v3 .kicker {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      padding: 18px 0;
+      border-block: 1px solid #d8d2c6;
+      font-size: 11px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: #6d675d;
+    }
+
+    .v3 .kicker strong {
+      color: #1c1c1a;
+      font-weight: 600;
+    }
+
+    .v3 section {
+      padding: 62px 0;
+    }
+
+    .v3 h2 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(30px, 3.8vw, 46px);
+      line-height: 1.04;
+      margin: 0;
+      letter-spacing: -.01em;
+    }
+
+    .v3 .head {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: end;
+      margin-bottom: 34px;
+    }
+
+    .v3 .head p {
+      margin: 0;
+      color: #4d4a44;
+      font-size: 15.5px;
+      line-height: 1.7;
+      max-width: 48ch;
+    }
+
+    .v3 .services {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 54px;
+      border-top: 1px solid #cfc8bb;
+    }
+
+    .v3 .services article {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 14px;
+      padding: 20px 0;
+      border-bottom: 1px solid #cfc8bb;
+    }
+
+    .v3 .services .ref {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 15px;
+      color: #a91515;
+    }
+
+    .v3 .services h3 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: 23px;
+      margin: 0 0 5px;
+    }
+
+    .v3 .services p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.65;
+      color: #55514a;
+    }
+
+    .v3 .gallery {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .v3 .gallery figure {
+      margin: 0;
+      position: relative;
+    }
+
+    .v3 .gallery figure:nth-child(1) img {
+      height: 380px;
+    }
+
+    .v3 .gallery figure:nth-child(2) img {
+      height: 300px;
+    }
+
+    .v3 .gallery figure:nth-child(3) img {
+      height: 250px;
+    }
+
+    .v3 .gallery img {
+      width: 100%;
+      object-fit: cover;
+      filter: saturate(.85);
+      transition: filter .4s;
+    }
+
+    .v3 .gallery figure:hover img {
+      filter: none;
+    }
+
+    .v3 .gallery figcaption {
+      font-size: 10.5px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #6d675d;
+      margin-top: 9px;
+    }
+
+    .v3 .about {
+      background: #1c1c1a;
+      color: #efece6;
+    }
+
+    .v3 .about-grid {
+      display: grid;
+      grid-template-columns: .85fr 1.15fr;
+      gap: 56px;
+      align-items: center;
+    }
+
+    .v3 .about figure {
+      margin: 0;
+    }
+
+    .v3 .about img {
+      width: 100%;
+      height: 440px;
+      object-fit: cover;
+      filter: grayscale(.35);
+    }
+
+    .v3 .about blockquote {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(22px, 2.6vw, 32px);
+      line-height: 1.25;
+      margin: 0 0 20px;
+    }
+
+    .v3 .about p {
+      color: #b7b1a6;
+      line-height: 1.75;
+      font-size: 15px;
+    }
+
+    .v3 .about ul {
+      list-style: none;
+      padding: 0;
+      margin: 22px 0 0;
+      display: grid;
+      gap: 10px;
+      color: #d8d2c6;
+      font-size: 14.5px;
+    }
+
+    .v3 .about li::before {
+      content: "→";
+      color: #c2492f;
+      margin-right: 10px;
+    }
+
+    .v3 .contact-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 50px;
+      align-items: center;
+    }
+
+    .v3 .contact .phone {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(30px, 4vw, 50px);
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 14px;
+      border-bottom: 3px solid #a91515;
+    }
+
+    .v3 .contact dl {
+      margin: 0;
+      display: grid;
+      gap: 16px;
+      font-size: 14.5px;
+    }
+
+    .v3 .contact dt {
+      font-size: 10.5px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: #7c7568;
+      margin-bottom: 3px;
+    }
+
+    .v3 .contact dd {
+      margin: 0;
+    }
+
+    .v3 footer {
+      border-top: 1px solid #cfc8bb;
+      padding: 22px 0 34px;
+      font-size: 11px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: #6d675d;
+    }
+
+    .v3 .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    /* =====================  VARIANT 5 — DONEGAL FIELD JOURNAL  ===================== */
+    body.v5 {
+      background: #f2eee4;
+      color: #20352e;
+      --journal-ink: #20352e;
+      --journal-muted: #686c61;
+      --journal-paper: #f2eee4;
+      --journal-line: #d4cbbb;
+      --journal-red: #a91515;
+      --journal-green: #244438;
+    }
+
+    .v5 .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(242, 238, 228, .96);
+      border-bottom: 1px solid var(--journal-line);
+    }
+
+    .v5 .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 8px 0;
+    }
+
+    .v5 .logo img {
+      height: 72px;
+      width: auto;
+      filter: none;
+    }
+
+    .v5 .nav ul {
+      display: flex;
+      gap: 23px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .v5 .nav ul a {
+      text-decoration: none;
+      color: var(--journal-ink);
+      border-bottom: 1px solid transparent;
+      padding-bottom: 4px;
+    }
+
+    .v5 .nav ul a:hover {
+      border-color: var(--journal-red);
+    }
+
+    .v5 .nav .call {
+      color: var(--journal-ink);
+      text-decoration: none;
+      font-family: "Barlow Condensed", sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      border-bottom: 2px solid var(--journal-red);
+      padding-bottom: 4px;
+    }
+
+    .v5 .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 610px;
+      border-bottom: 1px solid var(--journal-line);
+    }
+
+    .v5 .hero-copy {
+      padding: 80px max(34px, calc((100vw - 1240px) / 2)) 60px max(28px, calc((100vw - 1240px) / 2));
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: var(--journal-paper);
+      background-image: radial-gradient(rgba(32, 53, 46, .1) .65px, transparent .65px);
+      background-size: 8px 8px;
+    }
+
+    .v5 .hero-copy-inner {
+      max-width: 570px;
+      margin-left: auto;
+      width: 100%;
+    }
+
+    .v5 .hero .eyebrow,
+    .v5 .eyebrow {
+      font-family: "Space Mono", monospace;
+      color: var(--journal-red);
+      font-size: 10px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      margin: 0 0 19px;
+    }
+
+    .v5 .hero h1 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-weight: 400;
+      font-size: clamp(44px, 5.2vw, 70px);
+      line-height: .98;
+      letter-spacing: -.025em;
+      margin: 0 0 20px;
+    }
+
+    .v5 .hero h1 em {
+      font-style: italic;
+      color: var(--journal-red);
+    }
+
+    .v5 .hero .lede {
+      max-width: 45ch;
+      color: #4b574e;
+      font-size: 15px;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .v5 .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .v5 .btn {
+      display: inline-flex;
+      align-items: center;
+      padding: 13px 19px;
+      background: var(--journal-green);
+      color: #f7f3e9;
+      border: 1px solid var(--journal-green);
+      text-decoration: none;
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+      transition: background .2s, color .2s;
+    }
+
+    .v5 .btn:hover {
+      background: var(--journal-red);
+      border-color: var(--journal-red);
+    }
+
+    .v5 .btn--plain {
+      color: var(--journal-ink);
+      background: transparent;
+      border-color: var(--journal-line);
+    }
+
+    .v5 .btn--plain:hover {
+      color: #fff;
+    }
+
+    .v5 .hero-art {
+      margin: 0;
+      min-height: 610px;
+      position: relative;
+      background: #596653;
+      overflow: hidden;
+    }
+
+    .v5 .hero-art img {
+      width: 100%;
+      height: 100%;
+      min-height: 610px;
+      object-fit: cover;
+      filter: saturate(.75) contrast(1.04);
+    }
+
+    .v5 .hero-art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 54%, rgba(20, 35, 29, .66));
+    }
+
+    .v5 .photo-note {
+      position: absolute;
+      z-index: 2;
+      right: 22px;
+      bottom: 22px;
+      color: #fff;
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      border: 1px solid rgba(255, 255, 255, .6);
+      padding: 8px 11px;
+    }
+
+    .v5 .fact-band {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background: var(--journal-green);
+      color: #f2eee4;
+    }
+
+    .v5 .fact-band div {
+      padding: 18px 28px;
+      border-right: 1px solid rgba(242, 238, 228, .22);
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .v5 .fact-band div:last-child {
+      border-right: 0;
+    }
+
+    .v5 .fact-band strong {
+      display: block;
+      color: #fff;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 23px;
+      font-weight: 400;
+      letter-spacing: 0;
+      text-transform: none;
+      margin-bottom: 3px;
+    }
+
+    .v5 section {
+      padding: 62px 0;
+    }
+
+    .v5 .section-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 38px;
+      align-items: end;
+      margin-bottom: 30px;
+    }
+
+    .v5 h2 {
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(31px, 3.8vw, 47px);
+      line-height: 1.02;
+      font-weight: 400;
+      letter-spacing: -.015em;
+      margin: 0;
+    }
+
+    .v5 .section-head > p {
+      max-width: 46ch;
+      color: var(--journal-muted);
+      font-size: 14px;
+      line-height: 1.75;
+      margin: 0;
+    }
+
+    .v5 .service-ledger {
+      border-top: 1px solid var(--journal-line);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 44px;
+    }
+
+    .v5 .service-ledger article {
+      display: grid;
+      grid-template-columns: 35px 1fr;
+      gap: 13px;
+      padding: 17px 0 18px;
+      border-bottom: 1px solid var(--journal-line);
+    }
+
+    .v5 .service-ledger .ref {
+      color: var(--journal-red);
+      font-family: "Space Mono", monospace;
+      font-size: 10px;
+      padding-top: 5px;
+    }
+
+    .v5 .service-ledger h3 {
+      color: var(--journal-ink);
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: 22px;
+      line-height: 1.1;
+      font-weight: 400;
+      margin: 0 0 5px;
+    }
+
+    .v5 .service-ledger p {
+      color: var(--journal-muted);
+      font-size: 13px;
+      line-height: 1.55;
+      margin: 0;
+    }
+
+    .v5 .projects {
+      background: #e7e1d5;
+      border-block: 1px solid var(--journal-line);
+      padding: 58px 0 62px;
+    }
+
+    .v5 .project-grid {
+      display: grid;
+      grid-template-columns: 1.35fr 1fr 1fr;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .v5 .project-grid figure {
+      margin: 0;
+    }
+
+    .v5 .project-grid figure:first-child img {
+      height: 340px;
+    }
+
+    .v5 .project-grid figure:nth-child(2) img {
+      height: 265px;
+    }
+
+    .v5 .project-grid figure:nth-child(3) img {
+      height: 220px;
+    }
+
+    .v5 .project-grid img {
+      width: 100%;
+      object-fit: cover;
+      filter: saturate(.72);
+    }
+
+    .v5 .project-grid figcaption {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 8px;
+      color: #6a695e;
+      font-family: "Space Mono", monospace;
+      font-size: 8.5px;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .v5 .about {
+      background: var(--journal-green);
+      color: #f2eee4;
+    }
+
+    .v5 .about-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 58px;
+      align-items: center;
+    }
+
+    .v5 .about figure {
+      margin: 0;
+      border: 1px solid rgba(242, 238, 228, .35);
+      padding: 10px;
+    }
+
+    .v5 .about figure img {
+      width: 100%;
+      height: 365px;
+      object-fit: cover;
+      filter: saturate(.65);
+    }
+
+    .v5 .about .eyebrow {
+      color: #e0ad91;
+    }
+
+    .v5 .about h2 {
+      max-width: 13ch;
+      margin-bottom: 18px;
+    }
+
+    .v5 .about p {
+      color: #d0d2c7;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .v5 .about ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 18px;
+      padding: 20px 0 0;
+      margin: 20px 0 0;
+      border-top: 1px solid rgba(242, 238, 228, .22);
+      color: #f2eee4;
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .v5 .about li::before {
+      content: "↗ ";
+      color: #e0ad91;
+    }
+
+    .v5 .contact {
+      background: var(--journal-red);
+      color: #fff;
+      padding: 54px 0;
+    }
+
+    .v5 .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+
+    .v5 .contact .eyebrow {
+      color: #f0c1ae;
+    }
+
+    .v5 .contact h2 {
+      color: #fff;
+    }
+
+    .v5 .contact .phone {
+      display: inline-block;
+      margin-top: 12px;
+      color: #fff;
+      text-decoration: none;
+      font-family: "DM Serif Display", Georgia, serif;
+      font-size: clamp(30px, 4vw, 48px);
+      border-bottom: 2px solid rgba(255, 255, 255, .55);
+    }
+
+    .v5 .contact dl {
+      display: grid;
+      gap: 16px;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .v5 .contact dt {
+      margin-bottom: 3px;
+      color: #f1c9b9;
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    .v5 .contact dd {
+      margin: 0;
+    }
+
+    .v5 footer {
+      background: #e7e1d5;
+      color: #69695f;
+      padding: 22px 0 34px;
+      font-family: "Space Mono", monospace;
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .v5 .foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* =====================  RESPONSIVE  ===================== */
+    @media (max-width: 1000px) {
+      .v1 .service-row {
+        grid-template-columns: 44px 1fr;
+        gap: 8px 18px;
+      }
+
+      .v1 .service-row p {
+        grid-column: 2;
+      }
+
+      .v1 .service-row .arrow {
+        display: none;
+      }
+
+      .v1 .gallery {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 220px 180px;
+      }
+
+      .v1 .about-grid,
+      .v1 .contact-grid,
+      .v2 .hero-grid,
+      .v2 .about-grid,
+      .v2 .contact-grid,
+      .v3 .head,
+      .v3 .about-grid,
+      .v3 .contact-grid,
+      .v5 .section-head,
+      .v5 .about-grid,
+      .v5 .contact-grid {
+        grid-template-columns: 1fr;
+        gap: 34px;
+      }
+
+      .v2 .services {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .v2 .projects {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .v2 .hero-strip {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .v3 .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .v3 .hero-copy {
+        padding: 108px 26px 37px;
+      }
+
+      .v3 .hero-art {
+        height: 320px;
+      }
+
+      .v3 .services {
+        grid-template-columns: 1fr;
+      }
+
+      .v3 .gallery {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .v3 .gallery figure:nth-child(1) {
+        grid-column: span 2;
+      }
+    }
+
+    @media (max-width: 760px) {
+
+      .v1 .nav ul,
+      .v2 .nav ul,
+      .v3 .nav ul,
+      .v5 .nav ul {
+        display: none;
+      }
+
+      .v1 section,
+      .v2 section,
+      .v3 section,
+      .v5 section {
+        padding: 46px 0;
+      }
+
+      .v5 .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .v5 .hero-copy {
+        padding: 52px 24px 42px;
+      }
+
+      .v5 .hero-copy-inner {
+        margin: 0;
+      }
+
+      .v5 .hero-art,
+      .v5 .hero-art img {
+        min-height: 290px;
+        height: 290px;
+      }
+
+      .v5 .fact-band {
+        grid-template-columns: 1fr;
+      }
+
+      .v5 .fact-band div {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 11px 24px;
+        border-right: 0;
+        border-bottom: 1px solid rgba(242, 238, 228, .22);
+      }
+
+      .v5 .fact-band strong {
+        min-width: 92px;
+        margin: 0;
+      }
+
+      .v5 .service-ledger {
+        grid-template-columns: 1fr;
+      }
+
+      .v5 .project-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+
+      .v5 .project-grid figure:first-child img,
+      .v5 .project-grid figure:nth-child(2) img,
+      .v5 .project-grid figure:nth-child(3) img {
+        height: 220px;
+      }
+
+      .v5 .about figure img {
+        height: 290px;
+      }
+
+      .v5 .about ul {
+        grid-template-columns: 1fr;
+      }
+
+      .v1 .hero {
+        min-height: 70vh;
+        padding-top: 100px;
+      }
+
+      .v1 .gallery {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+      }
+
+      .v1 .gallery figure:first-child {
+        grid-row: auto;
+      }
+
+      .v1 .gallery figure img {
+        height: 220px;
+      }
+
+      .v1 .about figure img,
+      .v2 .about img,
+      .v3 .about img {
+        height: 300px;
+      }
+
+      .v2 .services,
+      .v2 .projects {
+        grid-template-columns: 1fr;
+      }
+
+      .v3 .gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .v3 .gallery figure:nth-child(1) {
+        grid-column: auto;
+      }
+
+      .v3 .gallery figure img {
+        height: 240px !important;
+      }
+
+      .switcher {
+        bottom: 10px;
+        max-width: calc(100vw - 20px);
+        flex-wrap: wrap;
+        justify-content: center;
+        font-size: 10px;
+        gap: 2px;
+      }
+
+      .switcher button {
+        min-width: 34px;
+        justify-content: center;
+        padding: 7px 8px;
+        letter-spacing: 0;
+      }
+
+      .switcher .switch-name {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .v1 .marquee div {
+        animation: none;
+      }
+
+      .v1 .gallery img,
+      .v3 .gallery img {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="v1">
+  <div class="preview-notice" role="note">Design preview only · copy and photos are placeholders, not approved for publication</div>
+
+  <!-- VARIANT 1 -->
+  <div class="variant" data-variant="1">
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="logo" href="#top" aria-label="Laghey Construction Ltd.">
+          <img src="img/Laghey5b.png" alt="Laghey Construction Ltd.">
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#s1">Services</a></li>
+            <li><a href="#p1">Projects</a></li>
+            <li><a href="#a1">About</a></li>
+            <li><a href="#c1">Contact</a></li>
+          </ul>
+        </nav>
+        <a class="btn" href="tel:+353749723589">074 9723589</a>
+      </div>
+    </header>
+
+    <div class="hero" id="top">
+      <div class="wrap">
+        <p class="eyebrow" style="color:#e04a2f">Registered contractor · Co. Donegal</p>
+        <h1>Built right<br>the first<em> time.</em></h1>
+        <p class="lede">New builds, extensions, renovations, attic conversions and roofing across Donegal — by a
+          contractor that has been on site since 1998.</p>
+        <div class="actions">
+          <a class="btn" href="#c1">Get a quote</a>
+          <a class="btn btn--ghost" href="#p1">See recent work</a>
+        </div>
+        <div class="hero-meta">
+          <div><strong>1998</strong>Trading since</div>
+          <div><strong>7</strong>Service areas</div>
+          <div><strong>Laghey</strong>Co. Donegal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marquee" aria-hidden="true">
+      <div>
+        <span>New builds</span><span>·</span><span>Extensions</span><span>·</span><span>Attic conversions</span>
+        <span>·</span><span>Sun-rooms</span><span>·</span><span>Renovations</span><span>·</span><span>Roofing</span>
+        <span>·</span><span>Carpentry contracts</span><span>·</span>
+        <span>New builds</span><span>·</span><span>Extensions</span><span>·</span><span>Attic conversions</span>
+        <span>·</span><span>Sun-rooms</span><span>·</span><span>Renovations</span><span>·</span><span>Roofing</span>
+        <span>·</span><span>Carpentry contracts</span><span>·</span>
+      </div>
+    </div>
+
+    <section class="section" id="s1">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <p class="eyebrow" style="color:#8f8a84">What we do</p>
+            <h2>Services</h2>
+          </div>
+          <a class="btn btn--ghost" href="#c1">Ask about your job</a>
+        </div>
+        <div class="service-list">
+          <div class="service-row">
+            <span class="num">01</span>
+            <h3>New builds</h3>
+            <p>Groundworks to final finish, managed by one contractor.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">02</span>
+            <h3>Extensions</h3>
+            <p>Extra room without moving house — designed and built to match.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">03</span>
+            <h3>Renovations</h3>
+            <p>Bringing older properties up to how you want to live in them.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">04</span>
+            <h3>Attic conversions</h3>
+            <p>Usable space from the roof you already have.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">05</span>
+            <h3>Sun-rooms</h3>
+            <p>Glazed rooms you can use in every season, not just July.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">06</span>
+            <h3>Roofing contracts</h3>
+            <p>Repairs, re-slating and new roof structures.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">07</span>
+            <h3>Carpentry contracts</h3>
+            <p>First and second fix joinery, supplied and fitted.</p>
+            <span class="arrow">↗</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="p1">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <p class="eyebrow" style="color:#8f8a84">On site</p>
+            <h2>Recent work</h2>
+          </div>
+          <p style="max-width:34ch;color:#9d9892;font-size:15px;line-height:1.6;margin:0">Photographs of finished jobs
+            land here — stock images standing in for now.</p>
+        </div>
+        <div class="gallery">
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project — placeholder</figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project — placeholder</figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project — placeholder</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="a1">
+      <div class="wrap about-grid">
+        <div>
+          <p class="eyebrow" style="color:#8f8a84">About</p>
+          <blockquote>“We’d rather build it once, properly, than come back to it twice.”</blockquote>
+          <p>Laghey Construction Ltd. is a registered building contractor working out of Donegal since 1998. The work
+            is carried out by a small, long-standing team of builders and carpenters, with the same people on the job
+            from start to finish.</p>
+          <ul>
+            <li>New builds and full extensions</li>
+            <li>Renovations and attic conversions</li>
+            <li>Sun-rooms and roofing contracts</li>
+          </ul>
+        </div>
+        <figure>
+          <img src="img/img-2.png" alt="Placeholder photograph standing in for the team">
+        </figure>
+      </div>
+    </section>
+
+    <section class="section contact section" id="c1">
+      <div class="wrap contact-grid">
+        <div>
+          <p class="eyebrow" style="opacity:.65">Get in touch</p>
+          <h2>Talk to us<br>about your build</h2>
+          <a class="phone" href="tel:+353749723589">074 972 3589</a>
+        </div>
+        <dl>
+          <div>
+            <dt>Joe</dt>
+            <dd><a href="tel:+353872838163">087 283 8163</a></dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd><a href="mailto:lagheyconstruction@gmail.com">lagheyconstruction@gmail.com</a></dd>
+          </div>
+          <div>
+            <dt>Based</dt>
+            <dd>Laghey Village, Co. Donegal</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap foot">
+        <span>© Laghey Construction Ltd.</span>
+        <span>Registered contractor · Co. Donegal</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VARIANT 2 -->
+  <div class="variant" data-variant="2" hidden>
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="logo" href="#top2" aria-label="Laghey Construction Ltd.">
+          <img src="img/Laghey5b.png" alt="Laghey Construction Ltd.">
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#s2">Services</a></li>
+            <li><a href="#p2">Projects</a></li>
+            <li><a href="#a2">About</a></li>
+            <li><a href="#c2">Contact</a></li>
+          </ul>
+        </nav>
+        <a class="btn" href="tel:+353749723589">Call 074 972 3589</a>
+      </div>
+    </header>
+
+    <div class="hero" id="top2">
+      <div class="wrap">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow" style="color:#a91515">Est. 1998 · Laghey, Co. Donegal</p>
+            <h1>Building work that <span>holds up</span> long after the handover.</h1>
+            <p class="lede">A registered contractor for new builds, extensions, renovations, attic conversions,
+              sun-rooms, roofing and carpentry contracts across Donegal.</p>
+            <div class="actions">
+              <a class="btn" href="#c2">Request a quote</a>
+              <a class="btn btn--ghost" href="#p2">View projects</a>
+            </div>
+          </div>
+          <aside class="sheet" aria-label="Company details">
+            <h2><span>Company file</span><span>01</span></h2>
+            <dl class="rows">
+              <div class="row">
+                <dt>Trade</dt>
+                <dd>General building contractor</dd>
+              </div>
+              <div class="row">
+                <dt>Since</dt>
+                <dd>1998</dd>
+              </div>
+              <div class="row">
+                <dt>Area</dt>
+                <dd>Laghey &amp; surrounding Donegal</dd>
+              </div>
+              <div class="row">
+                <dt>Phone</dt>
+                <dd><a href="tel:+353749723589">074 972 3589</a></dd>
+              </div>
+              <div class="row">
+                <dt>Email</dt>
+                <dd><a href="mailto:lagheyconstruction@gmail.com">lagheyconstruction@gmail.com</a></dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
+        <div class="hero-strip">
+          <div><strong>Registered</strong>Contractor</div>
+          <div><strong>1998</strong>Trading since</div>
+          <div><strong>7</strong>Services offered</div>
+          <div><strong>Donegal</strong>Based &amp; working</div>
+        </div>
+      </div>
+    </div>
+
+    <section class="section" id="s2">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <p class="eyebrow" style="color:#a91515">Scope of works</p>
+            <h2>What we build</h2>
+          </div>
+          <p>Seven areas of work, one contractor. Most jobs start with a phone call and a look at the site.</p>
+        </div>
+        <div class="services">
+          <article>
+            <span class="ref">01</span>
+            <h3>New builds</h3>
+            <p>Groundworks through to final finish, run by one contractor.</p>
+          </article>
+          <article>
+            <span class="ref">02</span>
+            <h3>Extensions</h3>
+            <p>Extra space, built to match the house you already have.</p>
+          </article>
+          <article>
+            <span class="ref">03</span>
+            <h3>Renovations</h3>
+            <p>Older properties brought up to modern living.</p>
+          </article>
+          <article>
+            <span class="ref">04</span>
+            <h3>Attic conversions</h3>
+            <p>Usable rooms from the roof space you already pay for.</p>
+          </article>
+          <article>
+            <span class="ref">05</span>
+            <h3>Sun-rooms</h3>
+            <p>Glazed rooms for every season, not just the warm ones.</p>
+          </article>
+          <article>
+            <span class="ref">06</span>
+            <h3>Roofing</h3>
+            <p>Repairs, re-slating and new roof structures.</p>
+          </article>
+          <article>
+            <span class="ref">07</span>
+            <h3>Carpentry</h3>
+            <p>First and second fix joinery, supplied and fitted.</p>
+          </article>
+          <article style="background:#16202a;color:#f4f1ea;border-color:#16202a">
+            <span class="ref" style="color:#e04a2f">?</span>
+            <h3 style="color:#f4f1ea">Something else?</h3>
+            <p style="color:#b9c2c9">If it is building work in Donegal, ask — <a href="tel:+353872838163"
+                style="color:#fff">087 283 8163</a>.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="p2">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <p class="eyebrow" style="color:#a91515">Selected work</p>
+            <h2>Projects</h2>
+          </div>
+          <p>Placeholder images until the company's own photographs arrive from site.</p>
+        </div>
+        <div class="projects">
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption><span>Project 01</span><span>Placeholder</span></figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption><span>Project 02</span><span>Placeholder</span></figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption><span>Project 03</span><span>Placeholder</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="a2">
+      <div class="wrap about-grid">
+        <figure style="margin:0">
+          <img src="img/img-2.png" alt="Placeholder photograph standing in for the team">
+        </figure>
+        <div>
+          <p class="eyebrow" style="color:#a91515">The company</p>
+          <h2>Same faces, start to finish</h2>
+          <p>Laghey Construction Ltd. has been building in Donegal since 1998. A small team of builders and carpenters
+            carries each job from foundations to handover, so the person who quotes the work is the person on site.</p>
+          <ul>
+            <li>Registered contractor, trading since 1998</li>
+            <li>New builds, extensions and renovations</li>
+            <li>Attic conversions, sun-rooms and roofing</li>
+            <li>Carpentry contracts, supplied and fitted</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="c2">
+      <div class="wrap contact-grid">
+        <div>
+          <p class="eyebrow" style="color:#8b96a1">Next step</p>
+          <h2>Tell us about the job</h2>
+          <a class="phone" href="tel:+353749723589">074 972 3589</a>
+          <p style="color:#a9b2ba;font-size:14.5px;margin-top:14px">Bridie answers the office line. Joe is on
+            <a href="tel:+353872838163" style="color:#fff">087 283 8163</a>.
+          </p>
+        </div>
+        <dl>
+          <div>
+            <dt>Email</dt>
+            <dd><a href="mailto:lagheyconstruction@gmail.com">lagheyconstruction@gmail.com</a></dd>
+          </div>
+          <div>
+            <dt>Address</dt>
+            <dd>Laghey Village, Co. Donegal</dd>
+          </div>
+          <div>
+            <dt>Hours</dt>
+            <dd>Monday to Saturday, site hours</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap foot">
+        <span>© Laghey Construction Ltd.</span>
+        <span>Registered contractor · Co. Donegal</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VARIANT 3 -->
+  <div class="variant" data-variant="3" hidden>
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="logo" href="#top3" aria-label="Laghey Construction Ltd.">
+          <img src="img/Laghey5b.png" alt="Laghey Construction Ltd.">
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#s3">Services</a></li>
+            <li><a href="#p3">Projects</a></li>
+            <li><a href="#a3">About</a></li>
+            <li><a href="#c3">Contact</a></li>
+          </ul>
+        </nav>
+        <a class="call" href="tel:+353749723589">074 972 3589</a>
+      </div>
+    </header>
+
+    <div class="hero" id="top3">
+      <div class="hero-copy">
+        <p class="eyebrow" style="color:#a91515">Laghey, Co. Donegal · Since 1998</p>
+        <h1>Good buildings start with <em>good builders.</em></h1>
+        <p class="lede">New builds, extensions, renovations, attic conversions, sun-rooms, roofing and carpentry — a
+          registered contractor working across Donegal for over twenty-five years.</p>
+        <div class="actions">
+          <a class="btn" href="#c3">Start a conversation</a>
+          <a class="btn btn--ghost" href="#p3">Look at the work</a>
+        </div>
+      </div>
+      <figure class="hero-art" style="margin:0">
+        <img src="img/hero-bg.jpg" alt="Placeholder photograph of a construction site">
+        <figcaption>Site photography — placeholder</figcaption>
+      </figure>
+    </div>
+
+    <div class="wrap">
+      <div class="kicker">
+        <span><strong>Registered</strong> contractor</span>
+        <span><strong>7</strong> service areas</span>
+        <span><strong>Laghey</strong> village, Donegal</span>
+      </div>
+
+      <section class="section" id="s3">
+        <div class="head">
+          <h2>What we do,<br>and how we do it</h2>
+          <p>One contractor, seven kinds of work. Every job is quoted on the site it is going to be built on, and
+            carried out by the same small team from start to finish.</p>
+        </div>
+        <div class="services">
+          <article><span class="ref">01</span>
+            <div>
+              <h3>New builds</h3>
+              <p>Foundations to final finish, managed by one contractor.</p>
+            </div>
+          </article>
+          <article>
+            <span class="ref">05</span>
+            <div>
+              <h3>Sun-rooms</h3>
+              <p>Glazed rooms you can use all year, not just in summer.</p>
+            </div>
+          </article>
+          <article><span class="ref">02</span>
+            <div>
+              <h3>Extensions</h3>
+              <p>Extra space, built to match the house you already have.</p>
+            </div>
+          </article>
+          <article><span class="ref">06</span>
+            <div>
+              <h3>Roofing contracts</h3>
+              <p>Repairs, re-slating and new roof structures.</p>
+            </div>
+          </article>
+          <article><span class="ref">03</span>
+            <div>
+              <h3>Renovations</h3>
+              <p>Older properties brought up to how you want to live.</p>
+            </div>
+          </article>
+          <article><span class="ref">07</span>
+            <div>
+              <h3>Carpentry contracts</h3>
+              <p>First and second fix joinery, supplied and fitted.</p>
+            </div>
+          </article>
+          <article><span class="ref">04</span>
+            <div>
+              <h3>Attic conversions</h3>
+              <p>Usable rooms from the roof space you already have.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="p3">
+        <div class="head">
+          <h2>Recent projects</h2>
+          <p>Placeholder photographs for now — real site images will replace them once the company supplies them.</p>
+        </div>
+        <div class="gallery">
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project 01 — placeholder</figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project 02 — placeholder</figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project 03 — placeholder</figcaption>
+          </figure>
+        </div>
+      </section>
+    </div>
+
+    <section class="section about" id="a3">
+      <div class="wrap about-grid">
+        <figure>
+          <img src="img/img-2.png" alt="Placeholder photograph standing in for the team">
+        </figure>
+        <div>
+          <p class="eyebrow" style="color:#8d867c">About the company</p>
+          <blockquote>“The person who quotes your job is the person who builds it.”</blockquote>
+          <p>Laghey Construction Ltd. has been working in Donegal since 1998. The team is small on purpose: builders and
+            carpenters who know each other's work, on the same job from the first day to the last.</p>
+          <ul>
+            <li>Registered contractor since 1998</li>
+            <li>New builds, extensions, renovations</li>
+            <li>Attic conversions, sun-rooms, roofing, joinery</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <section class="section" id="c3">
+        <div class="contact-grid">
+          <div>
+            <p class="eyebrow" style="color:#a91515">Enquiries</p>
+            <h2>Have a project in mind?</h2>
+            <a class="phone" href="tel:+353749723589">074 972 3589</a>
+          </div>
+          <dl>
+            <div>
+              <dt>Joe</dt>
+              <dd><a href="tel:+353872838163">087 283 8163</a></dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd><a href="mailto:lagheyconstruction@gmail.com">lagheyconstruction@gmail.com</a></dd>
+            </div>
+            <div>
+              <dt>Based</dt>
+              <dd>Laghey Village, Co. Donegal</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <div class="wrap foot">
+        <span>© Laghey Construction Ltd.</span>
+        <span>Registered contractor · Co. Donegal</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VARIANT 4 -->
+  <div class="variant" data-variant="4" hidden>
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="logo" href="#top4" aria-label="Laghey Construction Ltd.">
+          <img src="img/Laghey5b.png" alt="Laghey Construction Ltd.">
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#s4">Services</a></li>
+            <li><a href="#p4">Projects</a></li>
+            <li><a href="#a4">About</a></li>
+            <li><a href="#c4">Contact</a></li>
+          </ul>
+        </nav>
+        <a class="btn" href="tel:+353749723589">074 9723589</a>
+      </div>
+    </header>
+
+    <div class="hero" id="top4">
+      <div class="wrap">
+        <p class="eyebrow" style="color:#e04a2f">Registered contractor · Co. Donegal</p>
+        <h1>Built right<br>the first<em> time.</em></h1>
+        <p class="lede">New builds, extensions, renovations, attic conversions and roofing across Donegal — by a
+          contractor that has been on site since 1998.</p>
+        <div class="actions">
+          <a class="btn" href="#c4">Get a quote</a>
+          <a class="btn btn--ghost" href="#p4">See recent work</a>
+        </div>
+        <div class="hero-meta">
+          <div><strong>1998</strong>Trading since</div>
+          <div><strong>7</strong>Service areas</div>
+          <div><strong>Laghey</strong>Co. Donegal</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="marquee" aria-hidden="true">
+      <div>
+        <span>New builds</span><span>·</span><span>Extensions</span><span>·</span><span>Attic conversions</span>
+        <span>·</span><span>Sun-rooms</span><span>·</span><span>Renovations</span><span>·</span><span>Roofing</span>
+        <span>·</span><span>Carpentry contracts</span><span>·</span>
+        <span>New builds</span><span>·</span><span>Extensions</span><span>·</span><span>Attic conversions</span>
+        <span>·</span><span>Sun-rooms</span><span>·</span><span>Renovations</span><span>·</span><span>Roofing</span>
+        <span>·</span><span>Carpentry contracts</span><span>·</span>
+      </div>
+    </div>
+
+    <section class="section" id="s4">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <p class="eyebrow" style="color:#8f8a84">What we do</p>
+            <h2>Services</h2>
+          </div>
+          <a class="btn btn--ghost" href="#c4">Ask about your job</a>
+        </div>
+        <div class="service-list">
+          <div class="service-row">
+            <span class="num">01</span>
+            <h3>New builds</h3>
+            <p>Groundworks to final finish, managed by one contractor.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">02</span>
+            <h3>Extensions</h3>
+            <p>Extra room without moving house — designed and built to match.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">03</span>
+            <h3>Renovations</h3>
+            <p>Bringing older properties up to how you want to live in them.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">04</span>
+            <h3>Attic conversions</h3>
+            <p>Usable space from the roof you already have.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">05</span>
+            <h3>Sun-rooms</h3>
+            <p>Glazed rooms you can use in every season, not just July.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">06</span>
+            <h3>Roofing contracts</h3>
+            <p>Repairs, re-slating and new roof structures.</p>
+            <span class="arrow">↗</span>
+          </div>
+          <div class="service-row">
+            <span class="num">07</span>
+            <h3>Carpentry contracts</h3>
+            <p>First and second fix joinery, supplied and fitted.</p>
+            <span class="arrow">↗</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="p4">
+      <div class="wrap">
+        <div class="head">
+          <div>
+            <p class="eyebrow" style="color:#8f8a84">On site</p>
+            <h2>Recent work</h2>
+          </div>
+          <p style="max-width:34ch;color:#9d9892;font-size:15px;line-height:1.6;margin:0">Photographs of finished jobs
+            land here — stock images standing in for now.</p>
+        </div>
+        <div class="gallery">
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project — placeholder</figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project — placeholder</figcaption>
+          </figure>
+          <figure>
+            <img src="img/project-placeholder.jpg" alt="Placeholder project photograph">
+            <figcaption>Project — placeholder</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="a4">
+      <div class="wrap about-grid">
+        <div>
+          <p class="eyebrow" style="color:#8f8a84">About</p>
+          <blockquote>“We’d rather build it once, properly, than come back to it twice.”</blockquote>
+          <p>Laghey Construction Ltd. is a registered building contractor working out of Donegal since 1998. The work
+            is carried out by a small, long-standing team of builders and carpenters, with the same people on the job
+            from start to finish.</p>
+          <ul>
+            <li>New builds and full extensions</li>
+            <li>Renovations and attic conversions</li>
+            <li>Sun-rooms and roofing contracts</li>
+          </ul>
+        </div>
+        <figure>
+          <img src="img/img-2.png" alt="Placeholder photograph standing in for the team">
+        </figure>
+      </div>
+    </section>
+
+    <section class="section contact section" id="c4">
+      <div class="wrap contact-grid">
+        <div>
+          <p class="eyebrow" style="opacity:.65">Get in touch</p>
+          <h2>Talk to us<br>about your build</h2>
+          <a class="phone" href="tel:+353749723589">074 972 3589</a>
+        </div>
+        <dl>
+          <div>
+            <dt>Joe</dt>
+            <dd><a href="tel:+353872838163">087 283 8163</a></dd>
+          </div>
+          <div>
+            <dt>Email</dt>
+            <dd><a href="mailto:lagheyconstruction@gmail.com">lagheyconstruction@gmail.com</a></dd>
+          </div>
+          <div>
+            <dt>Based</dt>
+            <dd>Laghey Village, Co. Donegal</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap foot">
+        <span>© Laghey Construction Ltd.</span>
+        <span>Registered contractor · Co. Donegal</span>
+      </div>
+    </footer>
+  </div>
+
+  <!-- VARIANT 5 — DONEGAL FIELD JOURNAL -->
+  <div class="variant" data-variant="5" hidden>
+    <header class="site-header">
+      <div class="wrap nav">
+        <a class="logo" href="#top5" aria-label="Laghey Construction Ltd.">
+          <img src="img/Laghey5b.png" alt="Laghey Construction Ltd.">
+        </a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="#services5">Services</a></li>
+            <li><a href="#projects5">Projects</a></li>
+            <li><a href="#about5">About</a></li>
+            <li><a href="#contact5">Contact</a></li>
+          </ul>
+        </nav>
+        <a class="call" href="tel:+353749723589">074 972 3589</a>
+      </div>
+    </header>
+
+    <div class="hero" id="top5">
+      <div class="hero-copy">
+        <div class="hero-copy-inner">
+          <p class="eyebrow">Laghey · County Donegal · Est. 1998</p>
+          <h1>Built for the place you <em>call home.</em></h1>
+          <p class="lede">New builds, extensions, renovations, attic conversions, sun-rooms and roofing from a registered
+            contractor based in Laghey.</p>
+          <div class="actions">
+            <a class="btn" href="#contact5">Talk about your project</a>
+            <a class="btn btn--plain" href="#projects5">See the work</a>
+          </div>
+        </div>
+      </div>
+      <figure class="hero-art">
+        <img src="img/project-placeholder.jpg" alt="Stock construction photo standing in for a Laghey Construction project">
+        <figcaption class="photo-note">Site photo — placeholder</figcaption>
+      </figure>
+    </div>
+
+    <div class="fact-band">
+      <div><strong>1998</strong>Trading since</div>
+      <div><strong>Laghey</strong>Based in Donegal</div>
+      <div><strong>One call</strong>Start a conversation</div>
+    </div>
+
+    <section class="section" id="services5">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Draft copy · the work</p>
+            <h2>From first sketch<br>to finished room.</h2>
+          </div>
+          <p>Draft wording to show the layout. We can replace it with the company’s confirmed service descriptions later.</p>
+        </div>
+        <div class="service-ledger">
+          <article><span class="ref">01</span><div><h3>New builds</h3><p>Groundworks through to final finish.</p></div></article>
+          <article><span class="ref">02</span><div><h3>Extensions</h3><p>Make more room without leaving the home you love.</p></div></article>
+          <article><span class="ref">03</span><div><h3>Renovations</h3><p>Update and improve the spaces you already have.</p></div></article>
+          <article><span class="ref">04</span><div><h3>Attic conversions</h3><p>Turn unused roof space into a useful room.</p></div></article>
+          <article><span class="ref">05</span><div><h3>Sun-rooms</h3><p>Bring more light into your home, in every season.</p></div></article>
+          <article><span class="ref">06</span><div><h3>Roofing</h3><p>Roofing contracts for repairs and new work.</p></div></article>
+          <article><span class="ref">07</span><div><h3>Carpentry</h3><p>Carpentry contracts for your building project.</p></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section projects" id="projects5">
+      <div class="wrap">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">The project book</p>
+            <h2>Work in progress.</h2>
+          </div>
+          <p>These are temporary stock images. They’ll be replaced with photographs and details of the company’s own
+            projects.</p>
+        </div>
+        <div class="project-grid">
+          <figure><img src="img/project-placeholder.jpg" alt="Stock construction photograph placeholder">
+            <figcaption><span>Project 01</span><span>Details to come</span></figcaption>
+          </figure>
+          <figure><img src="img/project-placeholder.jpg" alt="Stock construction photograph placeholder">
+            <figcaption><span>Project 02</span><span>Details to come</span></figcaption>
+          </figure>
+          <figure><img src="img/project-placeholder.jpg" alt="Stock construction photograph placeholder">
+            <figcaption><span>Project 03</span><span>Details to come</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section about" id="about5">
+      <div class="wrap about-grid">
+        <figure><img src="img/img-2.png" alt="Temporary stock portrait standing in for a company photo"></figure>
+        <div>
+          <p class="eyebrow">A local contractor</p>
+          <h2>Good work is built on trust.</h2>
+          <p>Laghey Construction Ltd. is a registered contractor based in Laghey, Co. Donegal, and has been in business
+            since 1998. The company takes on building, renovation and carpentry work for homes across the area.</p>
+          <ul>
+            <li>Registered contractor</li>
+            <li>Trading since 1998</li>
+            <li>Based in Laghey, Co. Donegal</li>
+            <li>Seven types of building work</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact5">
+      <div class="wrap contact-grid">
+        <div>
+          <p class="eyebrow">Enquiries</p>
+          <h2>Tell us what<br>you’re planning.</h2>
+          <a class="phone" href="tel:+353749723589">074 972 3589</a>
+        </div>
+        <dl>
+          <div><dt>Joe</dt><dd><a href="tel:+353872838163">087 283 8163</a></dd></div>
+          <div><dt>Email</dt><dd><a href="mailto:lagheyconstruction@gmail.com">lagheyconstruction@gmail.com</a></dd></div>
+          <div><dt>Based</dt><dd>Laghey Village, Co. Donegal</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap foot"><span>© Laghey Construction Ltd.</span><span>Laghey · County Donegal</span></div>
+    </footer>
+  </div>
+
+  <div class="switcher" role="group" aria-label="Design variant">
+    <button type="button" data-pick="1" aria-label="A · Industrial" aria-pressed="true"><span class="switch-code">A</span><span class="switch-name">Industrial</span></button>
+    <button type="button" data-pick="2" aria-label="B · Blueprint" aria-pressed="false"><span class="switch-code">B</span><span class="switch-name">Blueprint</span></button>
+    <button type="button" data-pick="3" aria-label="C · Editorial" aria-pressed="false"><span class="switch-code">C</span><span class="switch-name">Editorial</span></button>
+    <button type="button" data-pick="4" aria-label="D · A + big logo" aria-pressed="false"><span class="switch-code">D</span><span class="switch-name">A + big logo</span></button>
+    <button type="button" data-pick="5" aria-label="E · Field journal" aria-pressed="false"><span class="switch-code">E</span><span class="switch-name">Field journal</span></button>
+  </div>
+
+  <script>
+    const buttons = document.querySelectorAll("[data-pick]");
+    const variants = document.querySelectorAll(".variant");
+
+    function pick(n) {
+      document.body.className = n === "4" ? "v1 v4" : "v" + n;
+      variants.forEach((el) => {
+        el.hidden = el.dataset.variant !== String(n);
+      });
+      buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.pick === String(n))));
+      history.replaceState(null, "", "?v=" + n);
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+
+    buttons.forEach((b) => b.addEventListener("click", () => pick(b.dataset.pick)));
+
+    const start = new URLSearchParams(location.search).get("v");
+    if (start && ["1", "2", "3", "4", "5"].includes(start)) pick(start);
+  </script>
+</body>
+
+</html>
